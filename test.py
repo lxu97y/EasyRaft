@@ -1,10 +1,12 @@
 import unittest
 import sys
-
+import socket
+import json
 class Test(unittest.TestCase):
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    def test_put_get_normal():
-        socket.create_connection(('localhost','5000'))
+   
+    def test_put(self):
+        server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server_socket.connect(('localhost',6000))
         data = {
             'type':'put',
             'payload':{
@@ -12,8 +14,10 @@ class Test(unittest.TestCase):
                 'value':'a',
                 }
             }
-        socket.send()
-        socket.recv
+        server_socket.send(json.dumps(data).encode('utf-8'))
+        recv_data = server_socket.recv(1024)
+        js = json.loads(recv_data.decode())
+        self.assertTrue(js['code']=='success')
 
 if __name__ == '__main__':
     unittest.main()

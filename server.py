@@ -1,6 +1,7 @@
 import socket
 import json
 import sys
+import threading
 
 
 kv_store=dict()
@@ -18,7 +19,7 @@ def main():
 
 def task(accepted_socket):
 	data = accepted_socket.recv(1024)
-	json_package = json.loads(data)
+	json_package = data.decode('utf8')
 	response=parse(json_package)
 	accepted_socket.send(response.encode('utf8'))
 	accepted_socket.close()
