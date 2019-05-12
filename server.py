@@ -7,13 +7,13 @@ kv_store=dict()
 
 def main():
 	server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.bind(("0.0.0.0", int(sys.argv[1])))
-    server_socket.listen(5)
+	server_socket.bind(("0.0.0.0", int(sys.argv[1])))
+	server_socket.listen(5)
 
-    while True:
-        (accepted_socket,addr) = server_socket.accept()
-        new_thread = threading.Thread(target=task,args=(accepted_socket,))
-        new_thread.start()
+	while True:
+		(accepted_socket,addr) = server_socket.accept()
+		new_thread = threading.Thread(target=task,args=(accepted_socket,))
+		new_thread.start()
 
 
 def task(accepted_socket):
@@ -59,3 +59,6 @@ def get(payload):
 def undefinedAction():
 	response={'code':'undefined action'}
 	return response
+
+if __name__=="__main__":
+    main()
