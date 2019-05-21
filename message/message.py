@@ -73,7 +73,7 @@ class VoteRequest(BaseMessage):
 		BaseMessage.__init__(self, sender, receiver, term, data)
 		self.type=BaseMessage.VOTE_REQUEST
 
-class VoteReponse(BaseMessage):
+class VoteResponse(BaseMessage):
 	'''Vote response
 
 	This class represents the response to vote.
