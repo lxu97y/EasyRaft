@@ -19,7 +19,4 @@ class Server(object):
 
     def receive_message(self,message)
         #call the handle_message method state
-        if self.currentTerm<= message.term:
-            self.state.handle_message(message)
-        else:
-            #send bad response
+        
