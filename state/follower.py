@@ -2,18 +2,9 @@ import time
 import random
 from ..message.message import *
 
-class Follwer(Voter):
+class Follwer(State):
 	def __init__(self):
-		Voter.__init__(self)
-		self.timeout=random.randrange(150,300)
-		self.server=None
-		self.last_vote=None
-
-	def set_server(self, server):
-		self.server=server
-
-	def refresh_timeout(self):
-		self.timeout=random.randrange(150,300)
+		State.__init__(self)
 
 	def handle_append_entries(self, message):
 		self.refresh_timeout()
@@ -43,33 +34,11 @@ class Follwer(Voter):
 					'''
 					pass
 
-
-	
-
 	def send_append_entries_response(self, message, success):
 		data={"success": success}
 		response=AppendEntriesResponse(self.server.name, message.sender, message.term, data)
 		self.server.send_response(response)
 
-	def send_bad_response(self, message):
-		data={}
-		response=BadResponse(self.server.name, message.sender, message.term, data)
-		self.server.send_response(response)
+	
 
-	def handle_message(self):
-		if message.type is None or message.term is None:
-			self.send_bad_response(message)
-		m_type=message.type
-		if message.term>self.server.currentTerm:
-			self.server.currentTerm=term
-		elif message.term<self.server.currentTerm:
-			self.send_bad_response(message)
-
-		if m_type==BaseMessage.APPEND_ENTRIES_REQUEST:
-			self.handle_append_entries(message)
-		elif m_type==BaseMessage.VOTE_REQUEST:
-			self.handle_vote_request(message)
-		elif m_type==BaseMessage.BAD_RESPONSE:
-			print("ERROR! This message is bad. "+str(message))
-		else:
-			pass
+	
