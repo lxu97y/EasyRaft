@@ -1,6 +1,7 @@
 import time
 import random
 from ..message.message import *
+from ..state import State
 
 class Follwer(State):
 	def __init__(self):

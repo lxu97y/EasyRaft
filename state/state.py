@@ -21,6 +21,7 @@ class State(object):
         m_type=message.type
         if message.term>self.server.currentTerm:
             self.server.currentTerm=term
+            #to do : convert to follower
         elif message.term<self.server.currentTerm:
             self.send_bad_response(message)
 
