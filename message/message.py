@@ -14,6 +14,7 @@ class BaseMessage(object):
 	APPEND_ENTRIES_RESPONSE=2
 	VOTE_REQUEST=3
 	VOTE_RESPONSE=4
+	BAD_RESPONSE=5
 
 	def __init__(self, sender, receiver, term, data):
 		self.sender=sender
@@ -86,3 +87,8 @@ class VoteReponse(BaseMessage):
 	def __init__(self, sender, receiver, term, data):
 		BaseMessage.__init__(self, sender, receiver, term, data)
 		self.type=BaseMessage.VOTE_RESPONSE
+
+class BadResponse(BaseMessage):
+	def __init__(self, sender, receiver, term, data):
+		BaseMessage.__init__(self, sender, receiver, term, data)
+		self.type=BaseMessage.BAD_RESPONSE
