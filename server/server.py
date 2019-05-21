@@ -13,8 +13,9 @@ class Server(object):
         self.currentTerm = 0
         self.lastApplied = 0
         self.state.set_server(self)
-    def send_message(self,message):
+    def send_response(self,message):
         #either request to response
+    def send_response(self,message):
 
     def receive_message(self,message)
         #call the handle_message method state

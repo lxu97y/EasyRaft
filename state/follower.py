@@ -14,15 +14,6 @@ class Follwer(object):
 	def refresh_timeout(self):
 		self.timeout=random.randrange(150,300)
 
-	def handle_vote_request(self, message):
-		if "lastLogIndex" not in message.data.keys():
-			self.send_vote_response(message, False)
-		if self.last_vote is None and message.data["lastLogIndex"]>=self.server.lastLogIndex:
-			self.last_vote=message.sender
-			self.send_vote_response(message, True)
-		else:
-			self.send_vote_response(message, False)
-
 	def handle_append_entries(self, message):
 		self.refresh_timeout()
 		if message.term<self.server.currentTerm:
@@ -52,10 +43,7 @@ class Follwer(object):
 					pass
 
 
-	def send_vote_response(self, message, voteGranted):
-		data={"voteGranted": voteGranted}
-		response=VoteResponse(self.server.name, message.sender, message.term, data)
-		self.server.send_response(response)
+	
 
 	def send_append_entries_response(self, message, success):
 		data={"success": success}
