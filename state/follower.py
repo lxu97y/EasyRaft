@@ -1,5 +1,6 @@
 import time
 import random
+from ..message.message import *
 
 class Follwer(object):
 	def __init__(self):
@@ -32,14 +33,14 @@ class Follwer(object):
 		else:
 
 
-	def send_vote_response(self, message, granted):
-		data={"granted": granted}
-		response=VoteResponseMessage(self.server.name, message.sender, message.term, data)
+	def send_vote_response(self, message, voteGranted):
+		data={"voteGranted": voteGranted}
+		response=VoteResponse(self.server.name, message.sender, message.term, data)
 		self.server.send_response(response)
 
 	def send_append_entries_response(self, message, success):
 		data={"success": success}
-		response=AppendEntriesResponseMessage(self.server.name, message.sender, message.term, data)
+		response=AppendEntriesResponse(self.server.name, message.sender, message.term, data)
 		self.server.send_response(response)
 
 	def handle_message(self):
