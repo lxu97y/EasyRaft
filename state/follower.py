@@ -2,8 +2,9 @@ import time
 import random
 from ..message.message import *
 
-class Follwer(object):
+class Follwer(Voter):
 	def __init__(self):
+		Voter.__init__(self)
 		self.timeout=random.randrange(150,300)
 		self.server=None
 		self.last_vote=None
