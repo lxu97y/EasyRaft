@@ -1,42 +1,44 @@
 import time
 import random
 from ..message.message import *
+from ..server.server import Server
+from ..config import Config
+
 
 class State(object):
     """docstring for State"""
-    def __init__(self):
-        self.timeout=random.randrange(150,300)
-        self.server = None
+    def __init__(self,server=None):
+        # self.timeout=random.randrange(150,300)
+        self.server = server
         self.votedFor = None
 
     def set_server(self, server):
         self.server=server
 
-    def refresh_timeout(self):
+    def refresh_election_timeout(self):
         self.timeout=random.randrange(150,300)
 
     def handle_message(self,message):
         if message.type is None or message.term is None:
             self.send_bad_response(message)
-        m_type=message.type
-
-        if message.term<self.server.currentTerm:
-            self.send_bad_response(message)
-
-        if m_type==BaseMessage.APPEND_ENTRIES_REQUEST:
-            self.handle_append_entries(message)
-        elif m_type==BaseMessage.VOTE_REQUEST:
+        
+        if message.type==BaseMessage.APPEND_ENTRIES_REQUEST:
+            self.handle_append_entries_request(message)
+        elif message.type==BaseMessage.VOTE_REQUEST:
             self.handle_vote_request(message)
-        elif m_type==BaseMessage.BAD_RESPONSE:
+        elif message.type==APPEND_ENTRIES_RESPONSE:
+            #to do
+        elif message.type == VOTE_RESPONSE:
+            self.handle_vote_response(message)
+        elif message.type==BaseMessage.BAD_RESPONSE:
             print("ERROR! This message is bad. "+str(message))
         else:
             pass
 
-    def send_bad_vote_response(self, message):
+    def send_bad_response(self, message):
         data={}
         response=BadResponse(self.server.name, message.sender, message.term, data)
         self.server.send_response(response)
-
 
     def handle_vote_request(self,message):
         if message.term < self.server.currentTerm or "lastLogIndex" not in message.data.keys():
@@ -51,3 +53,11 @@ class State(object):
         data={"voteGranted": voteGranted}
         response=VoteResponse(self.server.name, message.sender, message.term, data)
         self.server.send_response(response)
+
+    #empty interface for child override
+    def handle_append_entries_request(self,message):
+        pass
+
+    def handle_vote_response(self,message):
+        pass
+
