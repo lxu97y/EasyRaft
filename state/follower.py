@@ -1,9 +1,9 @@
 import time
 import random
 from ..message.message import *
-from ..state import State
+from ..state.state import State
 
-class Follwer(State):
+class Follower(State):
 	def __init__(self):
 		State.__init__(self)
 

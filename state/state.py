@@ -19,10 +19,8 @@ class State(object):
         if message.type is None or message.term is None:
             self.send_bad_response(message)
         m_type=message.type
-        if message.term>self.server.currentTerm:
-            self.server.currentTerm=term
-            #to do : convert to follower
-        elif message.term<self.server.currentTerm:
+
+        if message.term<self.server.currentTerm:
             self.send_bad_response(message)
 
         if m_type==BaseMessage.APPEND_ENTRIES_REQUEST:
@@ -34,7 +32,7 @@ class State(object):
         else:
             pass
 
-    def send_bad_response(self, message):
+    def send_bad_vote_response(self, message):
         data={}
         response=BadResponse(self.server.name, message.sender, message.term, data)
         self.server.send_response(response)
