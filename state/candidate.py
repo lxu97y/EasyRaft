@@ -5,12 +5,10 @@ from ..state.state import State
 from ..server.server import Server
 from ..config import Config
 
-
-
 class Candidate(object):
     """docstring for Candidate"""
     def __init__(self,server=None):
-        State.__init__(self,server)
+        State.__init__(self, server)
         self.received_votes={}
         self.refresh_election_timeout()
         self.election()
@@ -22,16 +20,12 @@ class Candidate(object):
             'lastLogIndex':len(self.server.log),
             'lastLogTerm' :self.server.log[-1]['term'] if self.server.log else 0
         }
-
-
         self.server.currentTerm+=1
         self.votedFor = candidateId
-
-
-
         message = VoteRequest(candidateId, None, term, data)
         self.server.publish_message(message)
         return
+
     def handle_vote_response(self,message):
         if message.term>self.server.currentTerm:
             return #Before calling this method, the state should be convert to Follower

@@ -18,26 +18,14 @@ class State(object):
     def refresh_election_timeout(self):
         self.timeout=random.randrange(150,300)
 
-    def handle_message(self,message):
-        if message.type is None or message.term is None:
-            self.send_bad_response(message)
-        
-        if message.type==BaseMessage.APPEND_ENTRIES_REQUEST:
-            self.handle_append_entries_request(message)
-        elif message.type==BaseMessage.VOTE_REQUEST:
-            self.handle_vote_request(message)
-        elif message.type==APPEND_ENTRIES_RESPONSE:
-            #to do
-        elif message.type == VOTE_RESPONSE:
-            self.handle_vote_response(message)
-        elif message.type==BaseMessage.BAD_RESPONSE:
-            print("ERROR! This message is bad. "+str(message))
-        else:
-            pass
-
     def send_bad_response(self, message):
         data={}
         response=BadResponse(self.server.name, message.sender, message.term, data)
+        self.server.send_response(response)
+
+    def send_vote_response(self, message, voteGranted):
+        data={"voteGranted": voteGranted}
+        response=VoteResponse(self.server.name, message.sender, message.term, data)
         self.server.send_response(response)
 
     def handle_vote_request(self,message):
@@ -49,15 +37,29 @@ class State(object):
         else:
             self.send_vote_response(message, False)
 
-    def send_vote_response(self, message, voteGranted):
-        data={"voteGranted": voteGranted}
-        response=VoteResponse(self.server.name, message.sender, message.term, data)
-        self.server.send_response(response)
-
     #empty interface for child override
+    def handle_vote_response(self,message):
+        pass
+        
     def handle_append_entries_request(self,message):
         pass
 
-    def handle_vote_response(self,message):
+    def handle_append_entries_response(self, message):
         pass
 
+    def handle_message(self,message):
+        if message.type is None or message.term is None:
+            self.send_bad_response(message)
+        
+        if message.type==BaseMessage.APPEND_ENTRIES_REQUEST:
+            self.handle_append_entries_request(message)
+        elif message.type==BaseMessage.VOTE_REQUEST:
+            self.handle_vote_request(message)
+        elif message.type==APPEND_ENTRIES_RESPONSE:
+            self.handle_append_entries_response(message)
+        elif message.type == VOTE_RESPONSE:
+            self.handle_vote_response(message)
+        elif message.type==BaseMessage.BAD_RESPONSE:
+            print("ERROR! This message is bad. "+str(message))
+        else:
+            pass

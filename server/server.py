@@ -19,7 +19,10 @@ class Server(object):
 
     def send_response(self,message):
         #either request to response
+        pass
+
     def publish_message(self,message):
+        pass
 
     def receive_message(self,message)
         #call the handle_message method state
