@@ -17,44 +17,35 @@ class Follower(State):
 	def handle_append_entries_request(self, message):
 		self.refresh_timeout()
 		if message.term<self.server.currentTerm:
-			self.send_bad_response(message)
+			self.send_append_entries_response(message, False)
+			return
 
-		if message.data is None:
-			self.send_bad_response(message)
-		elif message.data=={}:
-			pass
+		if message.data is None or message.data={}:
+			self.send_append_entries_response(message, False)
+			return
 		else:
 			log=self.server.log
 			data=message.data
 
 			if "leaderCommit" not in data.keys() or "prevLogIndex" not in data.keys() or "prevLogTerm" not in data.keys():
-				self.send_bad_response(message)
+				self.send_append_entries_response(message, False)
+				return
 			else:
-				if data["leaderCommit"]!=self.server.commitIndex:
-					self.server.commitIndex=min(data["leaderCommit"], len(log)-1)
-
-				if len(log)<data["prevLogIndex"]:
+				# index is from 1, so here is <=
+				if len(log)<=data["prevLogIndex"]:
 					self.send_append_entries_response(message, False)
+					return
 
 				if len(log)>0 and log[data["prevLogIndex"]]["term"]!=data["prevLogTerm"]:
-					log=log[:data["prevLogIndex"]]
-					self.server.log=log
-					self.server.lastLogTerm=data["prevLodTerm"]
+					self.server.log=log[0:data["prevLogIndex"]]
 					self.send_append_entries_response(message, False)
+					return
 				else:
-					if len(log)>0 and data["leaderCommit"]>0 and log[data["leaderCommit"]]["term"]!=message.term:
-						log=log[:self.server.commitIndex]
-						for x in data["entries"]:
-							log.append(x)
-							self.server.commitIndex=self.server.commitIndex+1
-						self.server.log=log
-						self.server.lastLogTerm=log[-1]["term"]
-						self.commitIndex=len(log)-1
-					elif len(data["entries"])>0:
-						for x in data["entries"]:
-							loag.append(x)
-							self.server.commitIndex=self.commitIndex+1
-						self.server.log=log
-						self.server.lastLogTerm=log[-1]["term"]
-						self.commitIndex=len(log)-1
+					log=log[0:data["prevLogIndex"]]
+					for x in data["entries"]:
+						log.append(x)
+						self.server.commitIndex=self.server.commitIndex+1
+					self.server.log=log
 					self.send_append_entries_response(message, True)
+					if data["leaderCommit"]>self.server.commitIndex:
+						self.server.commitIndex=min(data["leaderCommit"], self.server.lastLogIndex())
