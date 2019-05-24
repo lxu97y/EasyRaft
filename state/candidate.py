@@ -23,7 +23,6 @@ class Candidate(object):
         
         message = VoteRequest(candidateId, None, term, data)
         self.server.publish_message(message)
-        return
 
     def handle_vote_response(self,message):
         if message.term>self.server.currentTerm:
@@ -36,19 +35,3 @@ class Candidate(object):
         if type(self.server.state)==Candidate and 2*sum(self.received_votes.values())>Config.NUMBER_TOTAL_NODES:
             #promote to leader
             self.server.set_state(Leader(self.server))
-        return
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
