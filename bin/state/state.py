@@ -25,13 +25,19 @@ class State(object):
 
     def send_vote_response(self, message, voteGranted):
         data={"voteGranted": voteGranted}
+        
+            
         response=VoteResponse(self.server.id, message.sender, message.term, data)
+        if not voteGranted:
+            print(response.sender+" refuse to vote "+response.receiver)
+        else:
+            print(response.sender+"vote "+response.receiver)
         self.server.publish_message(response)
 
     def handle_vote_request(self,message):
         if message.term < self.server.currentTerm or "lastLogIndex" not in message.data.keys():
             self.send_vote_response(message, False)
-        elif self.votedFor in [None,message.data.get('candidateId',None)] and message.data["lastLogIndex"]>= (len(self.server.log)-1):
+        elif self.votedFor is None or self.votedFor == message.sender and message.data["lastLogIndex"]>= (len(self.server.log)-1):
             self.votedFor=message.sender
             self.send_vote_response(message, True)
         else:
@@ -50,7 +56,10 @@ class State(object):
     def handle_message(self,message):
         if message.type is None or message.term is None:
             self.send_bad_response(message)
+            return
         
+        self.server.refresh_election_timer()
+
         if message.type==BaseMessage.APPEND_ENTRIES_REQUEST:
             self.handle_append_entries_request(message)
         elif message.type==BaseMessage.VOTE_REQUEST:
@@ -63,3 +72,4 @@ class State(object):
             print("ERROR! This message is bad. "+str(message))
         else:
             pass
+
