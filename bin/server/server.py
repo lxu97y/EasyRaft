@@ -51,13 +51,11 @@ class Server(object):
             if message.receiver == self.id or message.receiver is None:
                 self.receive_message(message)
 
-
     def refresh_election_timer(self):
         if self.timer:
             self.timer.cancel()
         self.timer = Timer(random.randrange(150,300)/1000,self._convert_to_candiate)
         self.timer.start()
-
 
     def _convert_to_candiate(self):
         print(self.id+" become candidate and start election")

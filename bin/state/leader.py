@@ -4,7 +4,6 @@ from ..message.message import *
 from ..state.state import State
 from ..config import Config
 
-
 class Leader(State):
     def __init__(self,server=None):
         State.__init__(self,server)

@@ -3,7 +3,6 @@ import random
 from ..message.message import *
 from ..config import Config
 
-
 class State(object):
     """docstring for State"""
     def __init__(self,server=None):
@@ -25,8 +24,6 @@ class State(object):
 
     def send_vote_response(self, message, voteGranted):
         data={"voteGranted": voteGranted}
-        
-            
         response=VoteResponse(self.server.id, message.sender, message.term, data)
         if not voteGranted:
             print(response.sender+" refuse to vote "+response.receiver)
