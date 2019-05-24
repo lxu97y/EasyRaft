@@ -10,18 +10,17 @@ class Candidate(object):
     def __init__(self,server=None):
         State.__init__(self, server)
         self.received_votes={}
-        self.refresh_election_timeout()
-        self.election()
+        self.votedFor = self.server.id
+        self.election_request()
 
-    def election(self):
+    def election_request(self):
         candidateId = self.server.id
         term = self.server.term
         data = {
             'lastLogIndex':len(self.server.log),
             'lastLogTerm' :self.server.log[-1]['term'] if self.server.log else 0
         }
-        self.server.currentTerm+=1
-        self.votedFor = candidateId
+        
         message = VoteRequest(candidateId, None, term, data)
         self.server.publish_message(message)
         return
