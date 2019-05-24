@@ -2,23 +2,23 @@ import time
 import random
 from ..message.message import *
 from ..state.state import State
-from ..server.server import Server
 from ..config import Config
+from ..state.leader import Leader
 
-class Candidate(object):
+class Candidate(State):
     """docstring for Candidate"""
     def __init__(self,server=None):
         State.__init__(self, server)
-        self.received_votes={}
+        self.received_votes={self.server.id:1}
         self.votedFor = self.server.id
         self.election_request()
 
     def election_request(self):
         candidateId = self.server.id
-        term = self.server.term
+        term = self.server.currentTerm
         data = {
-            'lastLogIndex':len(self.server.log),
-            'lastLogTerm' :self.server.log[-1]['term'] if self.server.log else 0
+            'lastLogIndex':self.server.lastLogIndex(),
+            'lastLogTerm' :self.server.lastLogTerm()
         }
         
         message = VoteRequest(candidateId, None, term, data)
@@ -32,9 +32,11 @@ class Candidate(object):
             if message.data['voteGranted']:
                 self.received_votes[message.sender]=1
             else:
-                pass
+                self.received_votes[message.sender]=0
         if type(self.server.state)==Candidate and 2*sum(self.received_votes.values())>Config.NUMBER_TOTAL_NODES:
             #promote to leader
+            print(self.server.id+"become leader"+'\ncurrent term is '+str(self.server.currentTerm)
+                + "vote detail: "+str(self.received_votes))
             self.server.set_state(Leader(self.server))
         return
 

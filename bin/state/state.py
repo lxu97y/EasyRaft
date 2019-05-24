@@ -1,7 +1,6 @@
 import time
 import random
 from ..message.message import *
-from ..server.server import Server
 from ..config import Config
 
 
@@ -9,6 +8,7 @@ class State(object):
     """docstring for State"""
     def __init__(self,server=None):
         # self.timeout=random.randrange(150,300)
+        self.leaderId = None
         self.server = server
         self.votedFor = None
 
@@ -25,8 +25,8 @@ class State(object):
 
     def send_vote_response(self, message, voteGranted):
         data={"voteGranted": voteGranted}
-        response=VoteResponse(self.server.name, message.sender, message.term, data)
-        self.server.send_response(response)
+        response=VoteResponse(self.server.id, message.sender, message.term, data)
+        self.server.publish_message(response)
 
     def handle_vote_request(self,message):
         if message.term < self.server.currentTerm or "lastLogIndex" not in message.data.keys():
@@ -55,9 +55,9 @@ class State(object):
             self.handle_append_entries_request(message)
         elif message.type==BaseMessage.VOTE_REQUEST:
             self.handle_vote_request(message)
-        elif message.type==APPEND_ENTRIES_RESPONSE:
+        elif message.type==BaseMessage.APPEND_ENTRIES_RESPONSE:
             self.handle_append_entries_response(message)
-        elif message.type == VOTE_RESPONSE:
+        elif message.type == BaseMessage.VOTE_RESPONSE:
             self.handle_vote_response(message)
         elif message.type==BaseMessage.BAD_RESPONSE:
             print("ERROR! This message is bad. "+str(message))
