@@ -35,7 +35,7 @@ class AppendEntriesRequest(BaseMessage):
 			"prevLogTerm": an integer, term of prevLogIndex entry
 			"entries": a list, log entries to store (empty for heartbeat; may send more than one for efficiency)
 			"leaderCommit": an integer, leader’s commit index
-		}
+			}
 	'''
 	def __init__(self, sender, receiver, term, data):
 		BaseMessage.__init__(self, sender, receiver, term, data)

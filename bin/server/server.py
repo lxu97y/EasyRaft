@@ -22,7 +22,9 @@ class Server(object):
         print(self.id+" become follower")
         self.timer = None
         self.refresh_election_timer()
-        self.message_buffer=deque()
+        self.message_buffer=deque()#to do: thread safe design
+        self.buffer_lock = threading.RLock()
+        self.log_lock = threading.RLock()
         self.p_thread = threading.Thread(target=self.publish_task)
         self.p_thread.start()
         self.s_thread = threading.Thread(target=self.subscribe_task)
@@ -34,7 +36,9 @@ class Server(object):
         socket.bind("tcp://0.0.0.0:%d" % Config.NODE_LIST[self.id][1])
         while True:
             if self.message_buffer:
+                self.buffer_lock.acquire()
                 message = self.message_buffer.popleft()
+                self.buffer_lock.release()
                 socket.send_pyobj(message)
             time.sleep(0.01)
 
@@ -59,9 +63,8 @@ class Server(object):
 
     def _convert_to_candiate(self):
         print(self.id+" become candidate and start election")
-        self.refresh_election_timer()
         self.currentTerm+=1
-        self.set_state(Candidate(self))
+        self.set_state(Candidate(self))#timer would be refresh when initialing the state object
 
     def lastLogIndex(self):
         return len(self.log)-1
@@ -74,7 +77,9 @@ class Server(object):
         return
 
     def publish_message(self,message):
+        self.buffer_lock.acquire()
         self.message_buffer.append(message)
+        self.buffer_lock.release()
         return
 
     def receive_message(self,message):

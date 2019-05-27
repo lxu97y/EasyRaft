@@ -11,6 +11,7 @@ class Candidate(State):
         State.__init__(self, server)
         self.received_votes={self.server.id:1}
         self.votedFor = self.server.id
+        self.server.refresh_election_timer()
         self.election_request()
 
     def election_request(self):

@@ -10,12 +10,10 @@ class State(object):
         self.leaderId = None
         self.server = server
         self.votedFor = None
+        
 
     def set_server(self, server):
         self.server=server
-
-    def refresh_election_timeout(self):
-        self.timeout=random.randrange(150,300)
 
     def send_bad_response(self, message):
         data={}
@@ -28,7 +26,7 @@ class State(object):
         if not voteGranted:
             print(response.sender+" refuse to vote "+response.receiver)
         else:
-            print(response.sender+"vote "+response.receiver)
+            print(response.sender+"vote "+response.receiver+' term is '+str(self.server.currentTerm))
         self.server.publish_message(response)
 
     def handle_vote_request(self,message):
