@@ -21,7 +21,7 @@ class Follower(State):
 			self.send_append_entries_response(message, False)
 			return
 
-		if message.data is None or message.data={}:
+		if message.data is None or message.data=={}:
 			self.send_append_entries_response(message, False)
 			return
 		else:

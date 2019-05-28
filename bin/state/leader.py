@@ -3,7 +3,7 @@ import random
 from ..message.message import *
 from ..state.state import State
 from ..config import Config
-from colletions import defaultdict
+from collections import defaultdict
 
 class Leader(State):
     def __init__(self,server=None):
