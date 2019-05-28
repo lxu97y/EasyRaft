@@ -36,7 +36,6 @@ class Leader(State):
                     self.server.matchIndex = matchIndex
                 return
 
-
     def heartbeat(self):
         while True:
             for adjacent in self.server.adjacents:
@@ -56,4 +55,6 @@ class Leader(State):
                 message = AppendEntriesRequest(self.server.id, adjacent, self.server.currentTerm, data)
                 self.server.publish_message(message)
             time.sleep(0.005)
+    
+    def handle_client_request(self):
         pass

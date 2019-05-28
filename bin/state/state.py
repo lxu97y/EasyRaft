@@ -11,7 +11,6 @@ class State(object):
         self.server = server
         self.votedFor = None
         
-
     def set_server(self, server):
         self.server=server
 
@@ -26,7 +25,7 @@ class State(object):
         if not voteGranted:
             print(response.sender+" refuse to vote "+response.receiver)
         else:
-            print(response.sender+"vote "+response.receiver+' term is '+str(self.server.currentTerm))
+            print(response.sender+" vote "+response.receiver+' term is '+str(self.server.currentTerm))
         self.server.publish_message(response)
 
     def handle_vote_request(self,message):
@@ -34,7 +33,10 @@ class State(object):
             self.send_vote_response(message, False)
         elif self.votedFor is None or self.votedFor == message.sender and message.data["lastLogIndex"]>= (len(self.server.log)-1):
             self.votedFor=message.sender
-            self.send_vote_response(message, True)
+            if self.server.state==self:
+                self.send_vote_response(message, True)
+            else:
+                self.send_vote_response(message, False)
         else:
             self.send_vote_response(message, False)
 
@@ -68,3 +70,4 @@ class State(object):
         else:
             pass
 
+    def handle_client_request(self):

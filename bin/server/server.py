@@ -29,6 +29,10 @@ class Server(object):
         self.p_thread.start()
         self.s_thread = threading.Thread(target=self.subscribe_task)
         self.s_thread.start()
+        self.kvstore=dict()
+
+    def listen_client(self):
+        pass
 
     def publish_task(self):
         context = zmq.Context()
@@ -91,4 +95,3 @@ class Server(object):
 
         self.state.handle_message(message)
         return
-
