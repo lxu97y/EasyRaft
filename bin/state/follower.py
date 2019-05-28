@@ -16,7 +16,7 @@ class Follower(State):
 		self.server.send_response(response)
 
 	def handle_append_entries_request(self, message):
-		self.refresh_election_timeout()
+		self.server.refresh_election_timeout()
 		if message.term<self.server.currentTerm:
 			self.send_append_entries_response(message, False)
 			return

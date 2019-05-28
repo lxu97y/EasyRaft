@@ -47,7 +47,7 @@ class Server(object):
         socket = context.socket(zmq.SUB)
 
         for adjacent in self.adjacents:
-            socket.connect("tcp://0.0.0.0:%d" % Config.NODE_LIST[adjacent][1])
+            socket.connect("tcp://127.0.0.1:%d" % Config.NODE_LIST[adjacent][1])
 
         while True:
             socket.setsockopt(zmq.SUBSCRIBE, ''.encode('utf-8'))
