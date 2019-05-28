@@ -10,13 +10,15 @@ class Follower(State):
 		if self.server:
 			self.server.refresh_election_timer()
 
-	def send_append_entries_response(self, message, success):
+	def send_append_entries_response(self, message, success, matchIndex):
 		data={"success": success}
-		response=AppendEntriesResponse(self.server.name, message.sender, message.term, data)
-		self.server.send_response(response)
+		if success==True:
+			data["matchIndex"]=matchIndex
+		response=AppendEntriesResponse(self.server.id, message.sender, message.term, data)
+		self.server.publish_message(response)
 
 	def handle_append_entries_request(self, message):
-		self.server.refresh_election_timeout()
+		self.server.refresh_election_timer()
 		if message.term<self.server.currentTerm:
 			self.send_append_entries_response(message, False)
 			return
@@ -29,18 +31,18 @@ class Follower(State):
 			data=message.data
 
 			if "leaderCommit" not in data.keys() or "prevLogIndex" not in data.keys() or "prevLogTerm" not in data.keys():
-				self.send_append_entries_response(message, False)
+				self.send_append_entries_response(message, False, None)
 				return
 			else:
 				# index is from 1, so here is <=
 				if len(log)<=data["prevLogIndex"]:
-					self.send_append_entries_response(message, False)
+					self.send_append_entries_response(message, False, None)
 					return
 
 				if len(log)>0 and log[data["prevLogIndex"]]["term"]!=data["prevLogTerm"]:
 					#delete the existing entry and all that follow it
 					self.server.log=log[0:data["prevLogIndex"]]
-					self.send_append_entries_response(message, False)
+					self.send_append_entries_response(message, False, None)
 					return
 				else:
 					#keep entries from 0 to prevLogIndex
@@ -51,5 +53,5 @@ class Follower(State):
 					self.server.log=log
 					if data["leaderCommit"]>self.server.commitIndex:
 						self.server.commitIndex=min(data["leaderCommit"], self.server.lastLogIndex())
-					self.send_append_entries_response(message, True)
+					self.send_append_entries_response(message, True, self.server.lastLogIndex())
 		

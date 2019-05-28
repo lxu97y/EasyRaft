@@ -37,22 +37,21 @@ class Leader(State):
 
 
     def heartbeat(self):
-        # while True:
-        #     for adjacent in self.server.adjacents:
-        #         self.server.log_lock.acquire()
-        #         data={
-        #         'prevIndex':self.server.lastLogIndex(),
-        #         'prevTerm':self.server.lastLogTerm(),
-        #         'entries':[],
-        #         'commitIndex':self.server.commitIndex
-        #         }
-        #         self.server.log_lock.release()
-        #         if self.server.lastLogIndex()>=self.nextIndex[adjacent]:
-        #             data['prevIndex']=self.nextIndex[adjacent]-1
-        #             data['prevTerm']=self.server.log[data['prevIndex']]['term']
-        #             data['entries']=self.server.log[self.nextIndex[adjacent]:self.server.lastLogIndex()+1]
+        while True:
+            for adjacent in self.server.adjacents:
+                self.server.log_lock.acquire()
+                data={
+                'prevIndex':self.server.lastLogIndex(),
+                'prevTerm':self.server.lastLogTerm(),
+                'entries':[],
+                'commitIndex':self.server.commitIndex
+                }
+                self.server.log_lock.release()
+                if self.server.lastLogIndex()>=self.nextIndex[adjacent]:
+                    data['prevIndex']=self.nextIndex[adjacent]-1
+                    data['prevTerm']=self.server.log[data['prevIndex']]['term']
+                    data['entries']=self.server.log[self.nextIndex[adjacent]:self.server.lastLogIndex()+1]
 
-        #         message = AppendEntriesRequest(self.server.id, adjacent, self.server.currentTerm, data)
-        #         self.server.publish_message(message)
-        #     time.sleep(0.005)
-        pass
+                message = AppendEntriesRequest(self.server.id, adjacent, self.server.currentTerm, data)
+                self.server.publish_message(message)
+            time.sleep(0.005)
