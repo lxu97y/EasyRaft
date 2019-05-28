@@ -12,7 +12,8 @@ class Leader(State):
         self.nextIndex = defaultdict(int)
         for adjacent in self.server.adjacents:
             self.nextIndex[adjacent] = self.server.lastLogIndex()+1
-        
+        if self.server.timer:
+            self.server.timer.cancel()
         self.heartbeat()
 
     def handle_vote_request(self,message):
@@ -55,3 +56,4 @@ class Leader(State):
                 message = AppendEntriesRequest(self.server.id, adjacent, self.server.currentTerm, data)
                 self.server.publish_message(message)
             time.sleep(0.005)
+        pass
