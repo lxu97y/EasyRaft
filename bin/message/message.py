@@ -103,7 +103,7 @@ class ClientRequest(object):
 	Attributes:
 		data:{
 			'action':'PUT'|'GET',
-			'value':int|None,
+			'value':Object|None,
 		}
 	'''
 	def __init__(self,data):
