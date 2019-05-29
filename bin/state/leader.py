@@ -58,6 +58,9 @@ class Leader(State):
     
     def handle_client_request(self,client_socket):
         request = client_socket.recv_pyobj()
+        if request.action=='GET':
+            key = request.data['key']
+
 
 
 

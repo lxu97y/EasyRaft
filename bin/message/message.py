@@ -123,7 +123,7 @@ class ServerResponse(object):
 		code : 200|300|400|500 (ok|redirect|bad|leader not found)
 		data:{
 			if 200:
-				None
+				'value':Object(if request is GET)
 			if 300:
 				'ip_address':string,
 				'port':int
