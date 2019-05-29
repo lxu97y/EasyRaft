@@ -118,7 +118,7 @@ class ServerResponse(object):
 	This class represents the response to client.
 
 	Attributes:
-		code : 200|300|400 (ok|redirect|bad)
+		code : 200|300|400|500 (ok|redirect|bad|leader not found)
 		data:{
 			if 200:
 				None

@@ -71,3 +71,17 @@ class State(object):
             pass
 
     def handle_client_request(self，client_socket):
+        response = ServerResponse(
+            '300',
+            {
+                'ip_address':string,
+                'port':int
+            }
+                )
+        client_socket.send_pyobj()
+
+
+
+
+
+
