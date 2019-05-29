@@ -38,7 +38,7 @@ class Candidate(State):
             #promote to leader
             print(self.server.id+"become leader"+'\ncurrent term is '+str(self.server.currentTerm)
                 + "vote detail: "+str(self.received_votes))
-            self.server.set_state(Leader(self.server))
+            Leader(self.server)#pass leader to self.server
         return
 
 

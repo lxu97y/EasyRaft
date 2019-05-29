@@ -32,8 +32,9 @@ class Leader(State):
         match_index_array = sorted(self.matchIndex.values())
         for i,matchIndex in enumerate(match_index_array):
             if matchIndex> self.server.matchIndex:
-                if len(match_index_array)-i+1>=(len(match_index_array)/2):
+                if len(match_index_array)-i>=(len(match_index_array)/2):
                     self.server.matchIndex = matchIndex
+                    self.server.apply_log(self.server.matchIndex)
                 return
 
     def heartbeat(self):
@@ -60,6 +61,15 @@ class Leader(State):
         request = client_socket.recv_pyobj()
         if request.action=='GET':
             key = request.data['key']
+            if key in self.server.kvstore:
+                response = ServerResponse('200',{'value':self.server.kvstore[key]})
+            else:
+                response = ServerResponse('400',{})
+        elif request.action == 'PUT':
+            self.server.log.append({'action':reqeust.data,'term':self.server.currentTerm})
+            response = ServerResponse('200',{})
+
+
 
 
 

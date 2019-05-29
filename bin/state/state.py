@@ -10,6 +10,8 @@ class State(object):
         self.leaderId = None
         self.server = server
         self.votedFor = None
+        if server:
+            self.server.set_state(self)
         
     def set_server(self, server):
         self.server=server
@@ -70,7 +72,7 @@ class State(object):
         else:
             pass
 
-    def handle_client_request(self，client_socket):
+    def handle_client_request(self,client_socket):
         if self.leaderId:
             response = ServerResponse(
                 '300',

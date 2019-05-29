@@ -34,6 +34,12 @@ class Server(object):
     def listen_client(self):
         pass
 
+    def apply_log(self,new_last_applied_index):
+        for i in range(self.lastApplied+1,new_last_applied_index+1):
+            log_entry = self.log[i]
+            self.kvstore[log['action']['key']] = log['action']['value']
+        self.lastApplied=new_last_applied_index
+
     def publish_task(self):
         context = zmq.Context()
         socket = context.socket(zmq.PUB)
@@ -68,7 +74,7 @@ class Server(object):
     def _convert_to_candiate(self):
         print(self.id+" become candidate and start election")
         self.currentTerm+=1
-        self.set_state(Candidate(self))#timer would be refresh when initialing the state object
+        Candidate(self)#timer would be refresh when initialing the state object
 
     def lastLogIndex(self):
         return len(self.log)-1
@@ -78,7 +84,7 @@ class Server(object):
 
     def set_state(self,state):
         self.state = state
-        return
+        return  
 
     def publish_message(self,message):
         self.buffer_lock.acquire()
@@ -90,8 +96,9 @@ class Server(object):
         #call the handle_message method state
         if self.currentTerm<message.term:
             #convert to follower
-            self.set_state(Follower(self))
             self.currentTerm=message.term
+            Follower(self)
+            
 
         self.state.handle_message(message)
         return

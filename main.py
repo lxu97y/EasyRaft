@@ -9,7 +9,7 @@ server_list=[]
 
 for i,id in enumerate(ids):
     t=threading.Thread(target=server_list.append,args=(Server(str(id), [{
-            "action":"",
+            "action":None,
             "term":0,
         }], Follower(None), [str(_) for _ in ids[:i]+ids[i+1:]]),))
     t.start()
