@@ -56,5 +56,13 @@ class Leader(State):
                 self.server.publish_message(message)
             time.sleep(0.005)
     
-    def handle_client_request(self):
+    def handle_client_request(self,client_socket):
+        request = client_socket.recv_pyobj()
+
+
+
+
+
+
+
         pass

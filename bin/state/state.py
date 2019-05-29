@@ -71,14 +71,18 @@ class State(object):
             pass
 
     def handle_client_request(self，client_socket):
-        response = ServerResponse(
-            '300',
-            {
-                'ip_address':string,
-                'port':int
-            }
-                )
-        client_socket.send_pyobj()
+        if self.leaderId:
+            response = ServerResponse(
+                '300',
+                {
+                    'ip_address':Config.NODE_LIST[self.leaderId][0],
+                    'port':Config.NODE_LIST[self.leaderId][1],
+                }
+                    )
+        else:
+            response = ServerResponse('500',{})
+        client_socket.send_pyobj(response)
+        client_socket.close()
 
 
 
