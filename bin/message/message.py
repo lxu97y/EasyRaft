@@ -92,3 +92,55 @@ class BadResponse(BaseMessage):
 	def __init__(self, sender, receiver, term, data):
 		BaseMessage.__init__(self, sender, receiver, term, data)
 		self.type=BaseMessage.BAD_RESPONSE
+
+
+
+class ClientRequest(object):
+	'''Client Request
+
+	This class represents the request to server.
+
+	Attributes:
+		data:{
+			'action':'PUT'|'GET',
+			'value':int|None,
+		}
+	'''
+	def __init__(self,data):
+		self.data = data
+
+
+
+
+class ServerResponse(object):
+	'''ServerResponse
+
+	This class represents the response to client.
+
+	Attributes:
+		code : 200|300|400 (ok|redirect|bad)
+		data:{
+			if 200:
+				None
+			if 300:
+				'ip_address':string,
+				'port':int
+			if 400:
+				None
+		}
+	'''
+
+	def __init__(self,code,data):
+		self.code = code
+		self.data = data
+
+
+
+
+
+
+
+
+
+
+
