@@ -28,6 +28,7 @@ class Leader(State):
         else:
             self.nextIndex[message.sender]-=1
         # to do
+
     def _update_commit_index(self):
         match_index_array = sorted(self.matchIndex.values())
         for i,matchIndex in enumerate(match_index_array):
@@ -57,8 +58,7 @@ class Leader(State):
                 self.server.publish_message(message)
             time.sleep(0.005)
     
-    def handle_client_request(self,client_socket):
-        request = client_socket.recv_pyobj()
+    def handle_client_request(self, request, client_socket):
         if request.type=='GET':
             key = request.payload['key']
             if key in self.server.kvstore:
@@ -68,14 +68,3 @@ class Leader(State):
         elif request.action == 'PUT':
             self.server.log.append({'action':reqeust.payload,'term':self.server.currentTerm})
             response = ServerResponse('200',{})
-
-
-
-
-
-
-
-
-
-
-        pass

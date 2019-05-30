@@ -111,8 +111,21 @@ class ClientRequest(object):
 		self.type = action
 		self.payload = payload
 
+class ServerRequest(object):
+	'''ServerRequest
 
+	This class represents the request to client.
 
+	Attributes:
+		type: GET|PUT
+		payload: {
+			"key": key
+			"value": value
+		}
+	'''
+	def __init__(self, type, payload):
+		self.type=type
+		self.payload=payload
 
 class ServerResponse(object):
 	'''ServerResponse
@@ -135,14 +148,3 @@ class ServerResponse(object):
 	def __init__(self,code,data):
 		self.code = code
 		self.data = data
-
-
-
-
-
-
-
-
-
-
-
