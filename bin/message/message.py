@@ -101,15 +101,15 @@ class ClientRequest(object):
 	This class represents the request to server.
 
 	Attributes:
-		action:'PUT'|'GET'
-		data:{
+		type:'PUT'|'GET'
+		payload:{
 			'key': Object
 			'value':Object|None,
 		}
 	'''
-	def __init__(self,action,data):
-		self.action = action
-		self.data = data
+	def __init__(self,action,payload):
+		self.type = action
+		self.payload = payload
 
 
 

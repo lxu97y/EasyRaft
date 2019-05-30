@@ -59,14 +59,14 @@ class Leader(State):
     
     def handle_client_request(self,client_socket):
         request = client_socket.recv_pyobj()
-        if request.action=='GET':
-            key = request.data['key']
+        if request.type=='GET':
+            key = request.payload['key']
             if key in self.server.kvstore:
                 response = ServerResponse('200',{'value':self.server.kvstore[key]})
             else:
                 response = ServerResponse('400',{})
         elif request.action == 'PUT':
-            self.server.log.append({'action':reqeust.data,'term':self.server.currentTerm})
+            self.server.log.append({'action':reqeust.payload,'term':self.server.currentTerm})
             response = ServerResponse('200',{})
 
 
