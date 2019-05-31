@@ -46,3 +46,6 @@ print("the server has apply the latest log to state machine: "+str(test_leader_s
 
 for process in server_list:
     process.terminate()
+
+while True:
+    time.sleep(10)
