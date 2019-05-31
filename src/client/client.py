@@ -17,5 +17,9 @@ if response.code=='300':
 	socket.send_pyobj(request)
 	response=socket.recv_pyobj()
 	print(response)
-elif:
+elif response.code=='200':
+	print(response.data['value'])
+elif response.code=='400':
+	print("400, no value.")
+elif response.code=='500':
 	print("Server failed.")
