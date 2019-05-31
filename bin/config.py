@@ -1,4 +1,5 @@
 class Config:
+	CLIENT_ADDRESS="127.0.0.1"
 	CLIENT_PORT = 4432
     NUMBER_TOTAL_NODES =5
     NODE_LIST = {
