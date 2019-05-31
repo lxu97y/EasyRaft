@@ -30,8 +30,8 @@ class Leader(State):
             self._update_commit_index()
         else:
             print("receive false response from "+message.sender)
-            self.nextIndex[message.sender]=max(1,self.nextIndex[message.sender]-1)#in case the false response is delayed to, the burst false response would not corrupt nextIndex
-        # to do
+            #in case the false response is delayed to, the burst false response would not corrupt nextIndex
+            self.nextIndex[message.sender]=max(1,self.nextIndex[message.sender]-1)
 
     def _update_commit_index(self):
         match_index_array = sorted(self.matchIndex.values())
