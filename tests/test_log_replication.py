@@ -1,9 +1,11 @@
+import shlex, subprocess
+import threading
+import time
+import sys
+sys.path.append("..")
 from src.server.server import Server
 from src.state.follower import Follower
 from src.state.candidate import Candidate
-import threading
-import time
-import shlex, subprocess
 
 server_list=[]
 ids = [i for i in range(1,6)]

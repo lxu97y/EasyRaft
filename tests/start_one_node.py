@@ -1,9 +1,10 @@
-from src.server.server import Server
-from src.state.follower import Follower
-from src.state.candidate import Candidate
 import threading
 import time
 import sys
+sys.path.append("..")
+from src.server.server import Server
+from src.state.follower import Follower
+from src.state.candidate import Candidate
 
 timeout = float(sys.argv[2])
 log_status = int(sys.argv[3])
