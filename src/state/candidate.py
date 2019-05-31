@@ -36,8 +36,8 @@ class Candidate(State):
                 self.received_votes[message.sender]=0
         if type(self.server.state)==Candidate and 2*sum(self.received_votes.values())>Config.NUMBER_TOTAL_NODES:
             #promote to leader
-            print(self.server.id+"become leader"+'\ncurrent term is '+str(self.server.currentTerm)
-                + "vote detail: "+str(self.received_votes))
+            print(self.server.id+" become leader"+'\ncurrent term is '+str(self.server.currentTerm)
+                + " vote detail: "+str(self.received_votes))
             Leader(self.server)#pass leader to self.server
         return
 

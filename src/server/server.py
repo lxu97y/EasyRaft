@@ -111,7 +111,5 @@ class Server(object):
             #convert to follower
             self.currentTerm=message.term
             Follower(self)
-            
-
         self.state.handle_message(message)
         return
