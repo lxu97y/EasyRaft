@@ -20,12 +20,10 @@ class Follower(State):
 	def handle_append_entries_request(self, message):
 		self.server.refresh_election_timer()
 		if message.term<self.server.currentTerm:
-			print('0')
 			self.send_append_entries_response(message, False, self.server.lastLogIndex())
 			return
 
 		if message.data is None or message.data=={}:
-			print('1')
 			self.send_append_entries_response(message, False, self.server.lastLogIndex())
 			return
 		else:
@@ -33,21 +31,17 @@ class Follower(State):
 			data=message.data
 
 			if "leaderCommit" not in data.keys() or "prevLogIndex" not in data.keys() or "prevLogTerm" not in data.keys():
-				print('2')
 				self.send_append_entries_response(message, False, self.server.lastLogIndex())
 				return
 			else:
 				# index is from 1, so here is <=
 				if len(log)<=data["prevLogIndex"]:
-					print('type:3 message received: '+str(data))
-
 					self.send_append_entries_response(message, False, self.server.lastLogIndex())
 					return
 
 				if len(log)>0 and log[data["prevLogIndex"]]["term"]!=data["prevLogTerm"]:
 					#delete the existing entry and all that follow it
 					self.server.log=log[0:data["prevLogIndex"]]
-					print('4')
 					self.send_append_entries_response(message, False, self.server.lastLogIndex())
 					return
 				else:
@@ -59,7 +53,6 @@ class Follower(State):
 					self.server.log=log
 					if data["leaderCommit"]>self.server.commitIndex:
 						self.server.commitIndex=min(data["leaderCommit"], self.server.lastLogIndex())
-						self.server.apply_log()
+						self.server.apply_log(self.server.commitIndex)
 					self.server.leaderId=message.sender
 					self.send_append_entries_response(message, True, self.server.lastLogIndex())
-		
