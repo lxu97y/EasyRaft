@@ -49,7 +49,6 @@ class Follower(State):
 					log=log[0:data["prevLogIndex"]+1]
 					for x in data["entries"]:
 						log.append(x)
-						self.server.commitIndex=self.server.commitIndex+1
 					self.server.log=log
 					if data["leaderCommit"]>self.server.commitIndex:
 						self.server.commitIndex=min(data["leaderCommit"], self.server.lastLogIndex())
