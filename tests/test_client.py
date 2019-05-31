@@ -1,6 +1,7 @@
 import shlex, subprocess
 import unittest
 import time
+import random
 import sys
 sys.path.append("..")
 from src.message.message import *
@@ -8,22 +9,22 @@ from src.client.client import Client
 
 class Test(unittest.TestCase):
 	def test_get(self):
+		print("GET test.")
 		client=Client()
-		client.put('a',1)
-		client.put('b',2)
-		client.put('c',3)
-		client.get('a')
-		client.get('b')
-		client.get('c')
+		for i in range(0,100):
+			key=random.randint(0,10000)
+			value=random.randint(0,10000)
+			client.put(key, value)
+			return_value=client.get(key)
+			self.assertTrue(value==return_value)
+		print()
 		
 	def test_put(self):
+		print("PUT test.")
 		client=Client()
-		client.put('a',1)
-		client.put('b',2)
-		client.put('c',3)
-		client.put('a',1)
-		client.put('b',2)
-		client.put('c',3)
+		for i in range(0,100):
+			client.put(random.randint(0,10000), random.randint(0,10000))
+		print()
 
 if __name__ == '__main__':
 	cl="python test_election_one_candidate.py"
