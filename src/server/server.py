@@ -29,12 +29,14 @@ class Server(object):
         self.p_thread.start()
         self.s_thread = threading.Thread(target=self.subscribe_task)
         self.s_thread.start()
+        self.l_thread = threading.Thread(target=self.listen_client)
+        self.l_thread.start()
         self.kvstore=dict()
 
     def listen_client(self):
         context=zmq.Context()
         socket=context.socket(zmq.REP)
-        socket.bind("tcp://127.0.0.1:"%Config.CLIENT_PORT)
+        socket.bind("tcp://127.0.0.1:%s"%Config.NODE_LIST[self.id][2])
         while True:
             request = socket.recv_pyobj()
             response = self.state.handle_client_request(request)

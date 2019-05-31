@@ -18,6 +18,10 @@ class Follower(State):
 		self.server.publish_message(response)
 
 	def handle_append_entries_request(self, message):
+		if message.data['entries']:
+			print("add")
+
+
 		self.server.refresh_election_timer()
 		if message.term<self.server.currentTerm:
 			self.send_append_entries_response(message, False)
@@ -31,6 +35,8 @@ class Follower(State):
 			data=message.data
 
 			if "leaderCommit" not in data.keys() or "prevLogIndex" not in data.keys() or "prevLogTerm" not in data.keys():
+				
+				print('a')
 				self.send_append_entries_response(message, False, None)
 				return
 			else:

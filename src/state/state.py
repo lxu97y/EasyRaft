@@ -58,6 +58,7 @@ class State(object):
             return
         
         self.server.refresh_election_timer()
+        # print(str(self.server.id+ ' receive ')+str(message.type))
 
         if message.type==BaseMessage.APPEND_ENTRIES_REQUEST:
             self.handle_append_entries_request(message)

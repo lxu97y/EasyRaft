@@ -1,5 +1,5 @@
-from bin.server.server import Server
-from bin.state.follower import Follower
+from src.server.server import Server
+from src.state.follower import Follower
 import threading
 server_list=[]
 ids = [i for i in range(1,6)]
