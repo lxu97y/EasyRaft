@@ -15,7 +15,7 @@ server_list=[]
 
 for i,id in enumerate(ids):
     if i==0:
-        cl="python start_one_node.py "+str(id)+' 0.2 1'
+        cl="python start_one_node.py "+str(id)+' 0.2 2'
         #https://docs.python.org/3/library/subprocess.html
         args = shlex.split(cl)
         process = subprocess.Popen(args)
@@ -34,10 +34,21 @@ for i,id in enumerate(ids):
             }], Follower(None), [str(_) for _ in ids[:i]+ids[i+1:]])
     
 
-while len(test_follower_server.log)==1:
+while len(test_follower_server.log)<2:
+    print(test_follower_server.log)
     time.sleep(0.1)
 
-print("Append one entries from leader")
+print("new log from leader has been appended to follower"+str(test_follower_server.log))
+
+while test_follower_server.commitIndex<2:
+    time.sleep(0.1)
+print("follower commitIndex has been updated due to leader's commitIndex")
+
+while test_follower_server.lastApplied<2:
+    time.sleep(0.1)
+
+print("log was applied to state machine: "+str(test_follower_server.kvstore))
+
 
 for process in server_list:
     process.terminate()
