@@ -37,7 +37,8 @@ class Server(object):
         socket.bind("tcp://127.0.0.1:"%Config.CLIENT_PORT)
         while True:
             request = socket.recv_pyobj()
-            self.state.handle_client_request(request, socket)
+            response = self.state.handle_client_request(request)
+            socket.send_pyobj(response)
 
     def apply_log(self,new_last_applied_index):
         for i in range(self.lastApplied+1,new_last_applied_index+1):

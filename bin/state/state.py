@@ -72,7 +72,7 @@ class State(object):
         else:
             pass
 
-    def handle_client_request(self, request, client_socket):
+    def handle_client_request(self, request):
         if self.leaderId:
             response = ServerResponse(
                 '300',
@@ -83,4 +83,4 @@ class State(object):
                     )
         else:
             response = ServerResponse('500',{})
-        client_socket.send_pyobj(response)
+        return response

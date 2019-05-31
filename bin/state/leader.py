@@ -58,7 +58,7 @@ class Leader(State):
                 self.server.publish_message(message)
             time.sleep(0.005)
     
-    def handle_client_request(self, request, client_socket):
+    def handle_client_request(self, request):
         if request.type=='GET':
             key = request.payload['key']
             if key in self.server.kvstore:
@@ -68,3 +68,4 @@ class Leader(State):
         elif request.action == 'PUT':
             self.server.log.append({'action':reqeust.payload,'term':self.server.currentTerm})
             response = ServerResponse('200',{})
+        return response
