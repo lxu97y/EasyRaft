@@ -30,7 +30,7 @@ complete_test_log = [
 ids = []
 ids = [i for i in range(1,6)]
 
-
+print(complete_test_log[:log_status+1])
 for i,id in enumerate(ids):
     if str(id) == sys.argv[1]:
         Server(sys.argv[1], complete_test_log[:log_status+1], 
