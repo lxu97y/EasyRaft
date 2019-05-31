@@ -2,9 +2,11 @@ import zmq
 from ..config import Config
 from ..message.message import *
 
+ip=Config.NODE_LIST['1'][0]
+port=Config.NODE_LIST['1'][2]
 context=zmq.Context()
 socket=context.socket(zmq.REQ)
-socket.connect("tcp://"+Config.CLIENT_ADDRESS+":"+Config.CLIENT_PORT)
+socket.connect("tcp://"+ip+":"+port)
 request=ServerRequest("GET", {"key": "a", "value": "1"})
 socket.send_pyobj(request)
 response=socket.recv_pyobj()
