@@ -10,7 +10,7 @@ import zmq
 import threading
 
 class Server(object):
-    def __init__(self, id, log, state, adjacents):
+    def __init__(self, id, log, state, adjacents,initial_timeout = None):
         self.id = id
         self.state = state
         self.log = log #log is initialized with 0 index filled
@@ -21,7 +21,12 @@ class Server(object):
         self.state.set_server(self)
         print(self.id+" become follower")
         self.timer = None
-        self.refresh_election_timer()
+
+        if not initial_timeout:
+            self.refresh_election_timer()
+        else:
+            self.refresh_election_timer(initial_timeout)
+
         self.message_buffer=deque()#to do: thread safe design
         self.buffer_lock = threading.RLock()
         self.log_lock = threading.RLock()
@@ -45,7 +50,7 @@ class Server(object):
     def apply_log(self,new_last_applied_index):
         for i in range(self.lastApplied+1,new_last_applied_index+1):
             log_entry = self.log[i]
-            self.kvstore[log['action']['key']] = log['action']['value']
+            self.kvstore[log_entry['action']['key']] = log_entry['action']['value']
         self.lastApplied=new_last_applied_index
 
     def publish_task(self):
@@ -70,13 +75,13 @@ class Server(object):
         while True:
             socket.setsockopt(zmq.SUBSCRIBE, ''.encode('utf-8'))
             message = socket.recv_pyobj()
-            if message.receiver == self.id or message.receiver is None:
+            if message.receiver == self.id or message.receiver == None:
                 self.receive_message(message)
 
-    def refresh_election_timer(self):
+    def refresh_election_timer(self,timeout = random.randrange(150,300)/1000):
         if self.timer:
             self.timer.cancel()
-        self.timer = Timer(random.randrange(150,300)/1000,self._convert_to_candiate)
+        self.timer = Timer(timeout,self._convert_to_candiate)
         self.timer.start()
 
     def _convert_to_candiate(self):

@@ -13,6 +13,7 @@ class Leader(State):
         self.nextIndex = defaultdict(int)
         for adjacent in self.server.adjacents:
             self.nextIndex[adjacent] = self.server.lastLogIndex()+1
+            self.matchIndex[adjacent] =0
         if self.server.timer:
             self.server.timer.cancel()
         self.h_thread = threading.Thread(target=self.heartbeat)
@@ -28,7 +29,8 @@ class Leader(State):
             self.nextIndex[message.sender] = message.data['matchIndex']+1
             self._update_commit_index()
         else:
-            self.nextIndex[message.sender]-=1
+            print("receive false response from "+message.sender)
+            self.nextIndex[message.sender]=max(1,self.nextIndex[message.sender]-1)#in case the false response is delayed to, the burst false response would not corrupt nextIndex
         # to do
 
     def _update_commit_index(self):
@@ -36,14 +38,15 @@ class Leader(State):
         for i,matchIndex in enumerate(match_index_array):
             if matchIndex> self.server.commitIndex:
                 if len(match_index_array)-i>=(len(match_index_array)/2):
-                    print('new commitIndex')
+                    print(self.matchIndex)
                     self.server.commitIndex = matchIndex
-                    self.server.apply_log(self.server.matchIndex)
+                    self.server.apply_log(self.server.commitIndex)
                 return
 
     def heartbeat(self):
         while True:
-            print(self.server.log)
+            print("Leader's matchIndex: "+str(self.matchIndex))
+            print("Leader's nextIndex"+ str(self.nextIndex))
             for adjacent in self.server.adjacents:
                 self.server.log_lock.acquire()
                 data={
@@ -55,12 +58,13 @@ class Leader(State):
                 self.server.log_lock.release()
                 if self.server.lastLogIndex()>=self.nextIndex[adjacent]:
                     data['prevLogIndex']=self.nextIndex[adjacent]-1
+                    print(str(adjacent)+" prev log index is "+str(data['prevLogIndex']))
                     data['prevLogTerm']=self.server.log[data['prevLogIndex']]['term']
                     data['entries']=self.server.log[self.nextIndex[adjacent]:self.server.lastLogIndex()+1]
-
+                print('Sending '+ str(data)+'to '+str(adjacent))
                 message = AppendEntriesRequest(self.server.id, adjacent, self.server.currentTerm, data)
                 self.server.publish_message(message)
-            time.sleep(0.01)
+            time.sleep(0.1)
     
     def handle_client_request(self, request):
         if request.type=='GET':
