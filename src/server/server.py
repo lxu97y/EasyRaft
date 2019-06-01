@@ -85,8 +85,8 @@ class Server(object):
         self.timer.start()
 
     def _convert_to_candiate(self):
-        print(self.id+" become candidate and start election")
         self.currentTerm+=1
+        print(self.id+" become candidate and start election. term is "+str(self.currentTerm))
         Candidate(self)#timer would be refresh when initialing the state object
 
     def lastLogIndex(self):

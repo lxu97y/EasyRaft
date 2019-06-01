@@ -33,7 +33,7 @@ class State(object):
     def handle_vote_request(self,message):
         if message.term < self.server.currentTerm or "lastLogIndex" not in message.data.keys():
             self.send_vote_response(message, False)
-        elif self.votedFor is None or self.votedFor == message.sender and message.data["lastLogIndex"]>= (len(self.server.log)-1):
+        elif (self.votedFor is None or self.votedFor == message.sender) and message.data["lastLogIndex"]>= (len(self.server.log)-1):
             self.votedFor=message.sender
             if self.server.state==self:
                 self.send_vote_response(message, True)

@@ -35,7 +35,6 @@ for i,id in enumerate(ids):
     
 
 while len(test_follower_server.log)<2:
-    print(test_follower_server.log)
     time.sleep(0.1)
 
 print("new log from leader has been appended to follower"+str(test_follower_server.log))
@@ -45,7 +44,6 @@ while test_follower_server.commitIndex<2:
 print("follower commitIndex has been updated due to leader's commitIndex")
 
 while test_follower_server.lastApplied<2:
-    print(test_follower_server.kvstore)
     time.sleep(0.1)
 
 print("log was applied to state machine: "+str(test_follower_server.kvstore))
@@ -53,5 +51,3 @@ print("log was applied to state machine: "+str(test_follower_server.kvstore))
 
 for process in server_list:
     process.terminate()
-while True:
-    time.sleep(10)

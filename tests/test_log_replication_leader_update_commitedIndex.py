@@ -36,9 +36,9 @@ for i,id in enumerate(ids):
         process = subprocess.Popen(args)
         server_list.append(process)
     
-
+time.sleep(0.3)
 while test_leader_server.lastApplied<2:
-    print(test_leader_server.lastApplied)
+    print("leader's nextIndex is " + str(test_leader_server.state.nextIndex))
     time.sleep(0.1)
 
 print("the server has apply the latest log to state machine: "+str(test_leader_server.kvstore))
