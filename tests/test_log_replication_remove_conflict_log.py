@@ -21,6 +21,7 @@ for i,id in enumerate(ids):
         process = subprocess.Popen(args)
         server_list.append(process)
     else:
+        time.sleep(1)
         test_follower_server = Server(str(id), [
             {
                 "action":None,
