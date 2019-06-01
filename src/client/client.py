@@ -19,49 +19,56 @@ class Client(object):
 		socket=self.init_socket()
 		request=ServerRequest("PUT", {"key": key, "value": value})
 		socket.send_pyobj(request)
-		response=socket.recv_pyobj()
-		if response.code=='300':
-			data=response.data
-			self.ip=response.data["ip_address"]
-			self.data=response.data["port"]
-			socket=self.init_socket()
+		try:
 			response=socket.recv_pyobj()
-			if response.code=='200':
-				print("put value successfully.")
+			if response.code=='300':
+				data=response.data
+				self.ip=response.data["ip_address"]
+				self.data=response.data["port"]
+				socket=self.init_socket()
+				response=socket.recv_pyobj()
+				if response.code=='200':
+					print("put (%s,%s) successfully."%(str(key),str(value)))
+				elif response.code=='400':
+					print("put fails.")
+			elif response.code=='200':
+				print("put (%s,%s) successfully."%(str(key),str(value)))
 			elif response.code=='400':
-				print("fail.")
-		elif response.code=='200':
-			print("put value successfully.")
-		elif response.code=='400':
-			print("fail.")
-		elif response.code=='500':
-			print("Server failed.")
+				print("put fails.")
+			elif response.code=='500':
+				print("Server failed.")
+		except Exception as e:
+			print(e)
 		socket.close()
 
 	def get(self, key):
+		value=None
 		socket=self.init_socket()
 		request=ServerRequest("GET", {"key": key})
 		socket.send_pyobj(request)
-		response=socket.recv_pyobj()
-		if response.code=='300':
-			data=response.data
-			self.ip=response.data["ip_address"]
-			self.data=response.data["port"]
-			socket=self.init_socket()
+		try:
 			response=socket.recv_pyobj()
-			if response.code=='200':
+			if response.code=='300':
+				data=response.data
+				self.ip=response.data["ip_address"]
+				self.data=response.data["port"]
+				socket=self.init_socket()
+				response=socket.recv_pyobj()
+				if response.code=='200':
+					value=response.data['value']
+					print("get successfully: (%s,%s)"%(str(key),str(value)))
+				elif response.code=='400':
+					print("get fails. no value.")
+				else:
+					print("Server failed.")
+			elif response.code=='200':
 				value=response.data['value']
-				print("value of key "+str(key)+" is "+value)
+				print("get successfully: (%s,%s)"%(str(key),str(value)))
 			elif response.code=='400':
-				print("400, no value.")
-			else:
+				print("get fails. no value.")
+			elif response.code=='500':
 				print("Server failed.")
-		elif response.code=='200':
-			value=response.data['value']
-			print(value)
-		elif response.code=='400':
-			print("400, no value.")
-		elif response.code=='500':
-			print("Server failed.")
+		except Exception as e:
+			print(e)
 		socket.close()
 		return value

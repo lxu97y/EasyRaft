@@ -43,9 +43,13 @@ class Server(object):
         socket=context.socket(zmq.REP)
         socket.bind("tcp://127.0.0.1:%s"%Config.NODE_LIST[self.id][2])
         while True:
-            request = socket.recv_pyobj()
-            response = self.state.handle_client_request(request)
-            socket.send_pyobj(response)
+            #if the response is not python object, there will be an exception.
+            try:
+                request = socket.recv_pyobj()
+                response = self.state.handle_client_request(request)
+                socket.send_pyobj(response)
+            except Exception as e:
+                print(e)
 
     def apply_log(self,new_last_applied_index):
         for i in range(self.lastApplied+1,new_last_applied_index+1):
