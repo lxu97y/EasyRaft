@@ -12,7 +12,8 @@ class State(object):
         self.votedFor = None
         if server:
             self.server.set_state(self)
-        
+    
+    #specify the server to live
     def set_server(self, server):
         self.server=server
 

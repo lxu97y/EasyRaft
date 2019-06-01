@@ -6,7 +6,6 @@ from ..config import Config
 from ..state.leader import Leader
 
 class Candidate(State):
-    """docstring for Candidate"""
     def __init__(self,server=None):
         State.__init__(self, server)
         self.received_votes={self.server.id:1}
@@ -29,11 +28,13 @@ class Candidate(State):
     def handle_vote_response(self,message):
         if message.term>self.server.currentTerm:
             return #Before calling this method, the state should be convert to Follower
+        #do statistics for vote
         elif message.term==self.server.currentTerm:
             if message.data['voteGranted']:
                 self.received_votes[message.sender]=1
             else:
                 self.received_votes[message.sender]=0
+        #check if the candidate could be promoted to leader 
         if type(self.server.state)==Candidate and 2*sum(self.received_votes.values())>Config.NUMBER_TOTAL_NODES:
             #promote to leader
             print(self.server.id+" become leader"+'\ncurrent term is '+str(self.server.currentTerm)

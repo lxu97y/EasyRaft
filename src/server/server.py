@@ -73,6 +73,7 @@ class Server(object):
         context = zmq.Context()
         socket = context.socket(zmq.SUB)
 
+        #subscribe the publish port of all adjacient server
         for adjacent in self.adjacents:
             socket.connect("tcp://127.0.0.1:%d" % Config.NODE_LIST[adjacent][1])
 
@@ -83,6 +84,7 @@ class Server(object):
                 self.receive_message(message)
 
     def refresh_election_timer(self,timeout = random.randrange(150,300)/1000):
+        #cancel original timer to prevent duplicated candidate living on one server
         if self.timer:
             self.timer.cancel()
         self.timer = Timer(timeout,self._convert_to_candiate)
@@ -92,6 +94,7 @@ class Server(object):
         self.currentTerm+=1
         print(self.id+" become candidate and start election. term is "+str(self.currentTerm))
         Candidate(self)#timer would be refresh when initialing the state object
+        #current thread would do election and become leader if possible
 
     def lastLogIndex(self):
         return len(self.log)-1
@@ -104,6 +107,7 @@ class Server(object):
         return  
 
     def publish_message(self,message):
+        #push the message to publish message queue
         self.buffer_lock.acquire()
         self.message_buffer.append(message)
         self.buffer_lock.release()

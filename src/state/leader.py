@@ -35,8 +35,10 @@ class Leader(State):
 
     def _update_commit_index(self):
         match_index_array = sorted(self.matchIndex.values())
+        # seek the approporiate index to update
         for i,matchIndex in enumerate(match_index_array):
             if matchIndex> self.server.commitIndex:
+                #check if majority is reached
                 if len(match_index_array)-i>=(len(match_index_array)/2):
                     self.server.commitIndex = matchIndex
                     self.server.apply_log(self.server.commitIndex)
@@ -44,22 +46,27 @@ class Leader(State):
 
     def heartbeat(self):
         while True:
-            for adjacent in self.server.adjacents:
-                self.server.log_lock.acquire()
-                data={
-                'prevLogIndex':self.server.lastLogIndex(),
-                'prevLogTerm':self.server.lastLogTerm(),
-                'entries':[],
-                'leaderCommit':self.server.commitIndex
-                }
-                self.server.log_lock.release()
-                if self.server.lastLogIndex()>=self.nextIndex[adjacent]:
-                    data['prevLogIndex']=self.nextIndex[adjacent]-1
-                    data['prevLogTerm']=self.server.log[data['prevLogIndex']]['term']
-                    data['entries']=self.server.log[self.nextIndex[adjacent]:self.server.lastLogIndex()+1]
-                message = AppendEntriesRequest(self.server.id, adjacent, self.server.currentTerm, data)
-                self.server.publish_message(message)
-            time.sleep(0.1)
+            if self.server.state == self: # when this leader was abandoned, stop heartbeat
+                #specify heartbeart message to all adjacients
+                for adjacent in self.server.adjacents:
+                    self.server.log_lock.acquire()
+                    data={
+                    'prevLogIndex':self.server.lastLogIndex(),
+                    'prevLogTerm':self.server.lastLogTerm(),
+                    'entries':[],
+                    'leaderCommit':self.server.commitIndex
+                    }
+                    self.server.log_lock.release()
+
+                    if self.server.lastLogIndex()>=self.nextIndex[adjacent]:
+                        data['prevLogIndex']=self.nextIndex[adjacent]-1
+                        data['prevLogTerm']=self.server.log[data['prevLogIndex']]['term']
+                        data['entries']=self.server.log[self.nextIndex[adjacent]:self.server.lastLogIndex()+1]
+                    message = AppendEntriesRequest(self.server.id, adjacent, self.server.currentTerm, data)
+                    self.server.publish_message(message)
+                time.sleep(0.1)
+            else:
+                return
     
     def handle_client_request(self, request):
         if request.type=='GET':
